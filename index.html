@@ -218,6 +218,95 @@
             color: transparent;
         }
 
+        .section-feedback {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-image: url("greenBG.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 50vh;
+            padding: 5%;
+            gap: 10px;
+        }
+        
+        .section-feedback h1 {
+            width: 50rem;
+            font-size: 5rem;
+            margin-bottom: 20px;
+            line-height: 4.5rem;
+            text-align: center;
+            color: #ffffff;
+        }
+        
+        #message {
+            justify-content: center;
+            transform: translateX(70px) translateY(0);
+            width: 80%;
+            padding-right: 40px;
+            box-sizing: border-box;
+            padding: 20px 20px;
+            border-radius: 10px;
+            font-size: 20px;
+            font-family: Inter;
+            background-color: white;
+            color: #000000;
+            border: 1px solid #444;
+        }
+        
+        .send {
+            transform: translateX(250px) translateY(0);
+            font-size: 20px;
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            padding: 5px;
+            width: 10rem;
+            transition: 0.6s;
+        }
+        
+        .send:hover {
+            background: #2ecc71;
+            color: white;
+        }
+        
+        #statusMessage {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .rating {
+            display: flex;
+            justify-content: center;
+            transform: translateX(70px) translateY(0);
+            margin-bottom: 20px;
+        }
+
+        .rating input {
+            display: none;
+        }
+
+        .rating label {
+            font-size: 2rem;
+            color: #444;
+            cursor: pointer;
+        }
+
+        .rating input:checked ~ label,
+        .rating label:hover,
+        .rating label:hover ~ label {
+            color: var(--primary);
+        }
+
+        .rating input:checked ~ label ~ label {
+            color: #444;
+        }
+
         @keyframes rotate {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
@@ -276,7 +365,7 @@
                 <p>Monitor your shopping in real-time</p>
             </div>
             <div class="feature">
-                <div class="feature-icon">🛡️</div>
+                <div class="feature-icon">🛡</div>
                 <h3>Fraud Prevention</h3>
                 <p>Advanced security measures built-in</p>
             </div>
@@ -299,6 +388,27 @@
             <h2>Join the Retail Revolution with Revoliq</h2>
         </div>
     </div>
+    <section class="section-feedback" id="feedback">
+        <h1>Feedback Form</h1>
+        <form id="emailForm">
+            <div class="rating">
+                <input type="radio" id="star5" name="rating" value="5">
+                <label for="star5">★</label>
+                <input type="radio" id="star4" name="rating" value="4">
+                <label for="star4">★</label>
+                <input type="radio" id="star3" name="rating" value="3">
+                <label for="star3">★</label>
+                <input type="radio" id="star2" name="rating" value="2">
+                <label for="star2">★</label>
+                <input type="radio" id="star1" name="rating" value="1">
+                <label for="star1">★</label>
+            </div>
+            <textarea id="message" name="message" rows="4" cols="50" placeholder="I value your input! Please type your feedback in the space provided below. This form will send your comments directly to me via email."></textarea><br><br>
+            <button class="send" type="button">Send Message</button>
+        </form>
+        <p id="statusMessage"></p>
+    </section>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
     <script>
         // Custom cursor
@@ -420,6 +530,46 @@
             el.style.transform = 'translateY(20px)';
             el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
             observer.observe(el);
+        });
+
+        emailjs.init("dfv2P03gg8iBL_PjH");
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("emailForm");
+            const sendButton = document.querySelector(".send");
+            const statusMessage = document.getElementById("statusMessage");
+
+            sendButton.addEventListener("click", function () {
+                const message = document.getElementById("message").value;
+                const rating = document.querySelector('input[name="rating"]:checked') ? document.querySelector('input[name="rating"]:checked').value : '';
+
+                if (message.trim() === "" || rating === "") {
+                    statusMessage.textContent = "Please enter your feedback and select a rating before sending.";
+                    statusMessage.style.color = "red";
+                    return;
+                }
+
+                const params = {
+                    message: message,
+                    rating: rating
+                };
+
+                console.log("Params being sent:", params);
+
+                emailjs
+                    .send("service_t5vfvd6", "template_ejupqxp", params)
+                    .then(response => {
+                        console.log("Email sent successfully:", response);
+                        statusMessage.textContent = "Feedback sent successfully! Thank you.";
+                        statusMessage.style.color = "rgb(26, 255, 0)";
+                        form.reset();
+                    })
+                    .catch(error => {
+                        console.error("Email sending failed:", error);
+                        statusMessage.textContent = "Failed to send feedback. Please try again.";
+                        statusMessage.style.color = "red";
+                    });
+            });
         });
     </script>
 </body>
